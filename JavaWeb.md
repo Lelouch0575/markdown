@@ -1,3 +1,5 @@
+
+
 # Java Web
 
 ## 1.Getting Started
@@ -132,5 +134,135 @@ public class HelloServlet extends HttpServlet {
 
 `@WebServlet("/HelloServlet")`
 
+### Servlet生命周期
 
+- Servlet 通过调用 init () 方法进行初始化。
+- Servlet 调用 service() 方法来处理客户端的请求。
+- Servlet 通过调用 destroy() 方法终止（结束）。
+- 最后，Servlet 是由 JVM 的垃圾回收器进行垃圾回收的。
+
+每次服务器接收到一个 Servlet 请求时，服务器会产生一个新的线程并调用服务
+
+### Servlet与表单
+
+#### get方法
+
+请求的数据会附加在URL之后，以?分割URL和传输数据，多个参数用&连接。URL的编码格式采用的是ASCII编码，而不是unicode，即是说所有的非ASCII字符都要编码之后再传输。GET 方法有大小限制：请求字符串中最多只能有 1024 个字符。Servlet 使用 **doGet()** 方法处理这种类型的请求。
+
+```
+URL？参数名1=值&参数名2=值&...
+http://www.test.com/hello?key1=value1&key2=value2
+```
+
+#### post方法
+
+POST请求会把请求的数据放置在HTTP请求包的包体中，Servlet 使用 **doPost()** 方法处理这种类型的请求。
+
+#### 表单示例
+
+```html
+<html>
+<head><title>Login</title></head>
+<body>
+    <form action="InputServlet" method="post">
+    <!--在method中指定方式为get或post-->
+        请输入内容：<input type="text" name="info">
+        <input type="submit" value="提交">
+    </form>
+</body>
+</html>
+```
+
+#### 使用Servlet获取表单数据
+
+`String	getParameter(String name)`
+
+*Returns the value of a request parameter as a String, or null if the parameter does not exist.*
+
+`Map<String,String[]>	getParameterMap()`
+
+*Returns a java.util.Map of the parameters of this request.*
+
+`Enumeration<String>	getParameterNames()`
+
+*Returns an Enumeration of String objects containing the names of the parameters contained in this request.*
+
+`String[]	getParameterValues(String name)`
+
+*Returns an array of String objects containing all of the values the given request parameter has, or null if the parameter does not exist.*
+
+### 解决中文乱码
+
+#### 解决服务器返回页面中文乱码问题
+
+`response.setContentType("text/html;charset=UTF-8");`
+
+#### 解决post方式请求表单参数中文乱码问题
+`request.setCharacterEncoding("UTF-8");//注意此语句一定要设置在取参数的语句之前`
+
+#### 解决get方式请求中文参数乱码问题
+
+修改server.xml
+
+```xml
+<Connector port="8080" protocol="HTTP/1.1" maxThreads="150" connectionTimeout="20000"
+      redirectPort="8443" URIEncoding="UTF-8"/>
+```
+
+
+
+## 4.JSP表示层Web开发
+
+### 脚本标签
+
+- jsp脚本标签`<% %>`可定义局部变量，编写语句
+- jsp预定义脚本标签`<%! %>`可定义全局变量、方法、类
+- jsp脚本输出表达式`<%= %>用于输出一个变量或具体内容`
+
+### jsp注释
+
+- 显式注释 `<!-- -->`(客户端可以看见)
+
+- 隐式注释`<%-- --%>`(客户端无法看见)
+
+  ```jsp
+  <%
+  // Java中提供的单行注释，客户端无法看见
+  /*
+  Java中提供的多行注释，客户端无法看见
+  */
+  %>
+  ```
+
+### jsp指令
+
+| **指令**           | **描述**                                                |
+| :----------------- | :------------------------------------------------------ |
+| <%@ page ... %>    | 定义网页依赖属性，比如脚本语言、error页面、缓存需求等等 |
+| <%@ include ... %> | 包含其他文件                                            |
+| <%@ taglib ... %>  | 引入标签库的定义                                        |
+
+#### Page指令
+
+| **属性**    | **描述**                                            |
+| :---------- | :-------------------------------------------------- |
+| contentType | 指定当前JSP页面的MIME类型和字符编码                 |
+| errorPage   | 指定当JSP页面发生异常时需要转向的错误处理页面       |
+| isErrorPage | 指定当前页面是否可以作为另一个JSP页面的错误处理页面 |
+|import|导入要使用的Java类|
+
+使用MIME的类型可以设置打开文件的应用程序类型。
+
+contentType属性定义JSP页面响应内容的 MIME 类型和字符编码，也用来决定 JSP 页面的字符编码。contentType 的主要作用并不是决定当前 JSP 页面的字符编码，而是用来决定 JSP 页面响应内容的字符编码的。
+
+pageEncoding属性描述当前 JSP 页面的字符编码。在JSP中，如果 pageEncoding 属性存在，那么JSP 页面的编码将由pageEncoding决定。如果没有设定 pageEncoding属性，那么把 contentType 属性值中定义的 charset 的值决定。如果两者都不存在，那么使用 ISO-8859-1 作为当前 JSP 页面的编码。
+
+```
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ page language="java" contentType="application/msword;charset=UTF-8"%>
+<%@ page language="java" contentType="text/html" pageEncoding="UTF-8"%>
+错误页面的设置
+<%@ page isErrorPage="true"%>
+<%@ errorPage="error.jsp"%>
+```
 
