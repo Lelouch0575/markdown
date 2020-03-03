@@ -211,7 +211,7 @@ POST请求会把请求的数据放置在HTTP请求包的包体中，Servlet 使�
 
 
 
-## 4.JSP表示层Web开发
+## 4.表示层Web开发——JSP
 
 ### 脚本标签
 
@@ -264,5 +264,130 @@ pageEncoding属性描述当前 JSP 页面的字符编码。在JSP中，如果 pa
 错误页面的设置
 <%@ page isErrorPage="true"%>
 <%@ errorPage="error.jsp"%>
+```
+
+#### include指令
+
+**静态包含**：JSP可以通过include指令来包含其他文件。被包含的文件可以是JSP文件、HTML文件或文本文件。包含的文件就好像是该JSP文件的一部分，会被同时编译执行。语法格式：
+
+```
+<%@ include file="relativeURL|absoluteURL" %>
+```
+
+**动态包含**：使用jsp动作元素`<jsp:include>`，可以自动区分被包含的页面是静态还是动态。
+
+`include`指令，它是在JSP文件被转换成Servlet的时候引入文件，而`jsp:include`动作不同，插入文件的时间是在页面被请求的时候。语法格式：
+
+```
+<jsp:include page="relativeURL | <%=expressicry%>" />
+```
+
+include动作相关的属性：
+
+| 属性  | 描述                                       |
+| :---- | :----------------------------------------- |
+| page  | 包含在页面中的相对URL地址。                |
+| flush | 布尔属性，定义在包含资源前是否刷新缓存区。 |
+
+示例：
+
+`include_demo03.jsp`
+
+```jsp
+<%@ page contentType="text/html" pageEncoding="utf-8"%>
+<html>
+<head><title>动态包含</title></head>
+<body>
+    <h1>动态包含操作</h1>
+    <%
+        String username = "jack" ;
+    %>
+    <jsp:include page="receive_param.jsp">
+        <jsp:param name="name" value="<%=username%>"/>
+        <jsp:param name="info" value="www.gdqy.edu.cn"/>
+    </jsp:include>
+</body>
+</html>
+```
+
+`receive_param.jsp`
+
+```jsp
+<%@ page contentType="text/html" pageEncoding="utf-8"%>
+<h1>参数一：<%=request.getParameter("name")%></h1>
+<h1>参数二：<%=request.getParameter("info")%></h1>
+```
+
+### jsp内置对象
+
+JSP内置对象是JSP容器为每个页面提供的Java对象，开发者可以直接使用它们而不用显式声明。JSP隐式对象也被称为预定义变量。
+
+| **对象**    | **类型**                               | 描述                                       |
+| :---------- | :------------------------------------- | ------------------------------------------ |
+| request     | javax.servlet.http.HttpServletRequest  | 得到用户的请求信息                         |
+| response    | javax.servlet.http.HttpServletResponse | 服务器向客户端的回应信息                   |
+| out         | javax.servlet.jsp.JspWriter            | 页面输出                                   |
+| session     | javax.servlet.http.HttpSession         | 用来保存每一个用户的信息                   |
+| application | javax.servlet.ServletContext           | 表示所有用户的共享信息                     |
+| config      | javax.servlet.ServletConfig            | 服务器配置，可以取得初始化参数             |
+| pageContext | javax.servlet.jsp.PageContext          | jsp的页面容器                              |
+| page        | java.lang.Object                       | 表示从该页面中表示出来的一个 Servlet实例   |
+| Exception   | java.lang.Throwable                    | 表示JSP页面所发生的异常,在错误页中才起作用 |
+
+#### 四种属性范围
+
+- page：在一个页面内保存属性，跳转之后无效
+- request：在一次服务请求范围内，服务器跳转后依然有效
+- session：-在一次会话范围内，无论何种跳转都可以使用，但是新开浏览器无法使用
+- application：在整个服务器上保存，所有用户都可以使用
+
+四种属性的操作方法
+
+`void	setAttribute(String name, Object value)`
+*Binds an object to this session, using the name specified.*
+
+`Object	getAttribute(String name)`
+
+*Returns the object bound with the specified name in this session, or null if no object is bound under the name.*
+
+`void	removeAttribute(String name)`
+*Removes the object bound with the specified name from this session.*
+
+## 5.JDBC数据库访问
+
+### 查询
+
+- 简单查询
+
+```
+//第一步：加载驱动器
+Class.forName("com.mysql.cj.jdbc.Driver");
+
+//第二步：建立连接
+Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo","root","123456");
+         
+//第三步：执行sql语句
+String sql = "select * from member";
+Statement st = con.createStatement();
+ResultSet rs = st.executeQuery(sql);
+ 
+//第四步：遍历结果集
+while(rs.next()) {
+    System.out.println("username:" + rs.getString("username"));
+	System.out.println("password:" + rs.getString("password"))
+}
+
+//第五步：关闭连接
+con.close();
+```
+
+- 带参数查询
+
+```
+//第三步改为
+PreparedStatement pst = con.prepareStatement("select * from member where username=?");
+pst.setString(1, "jack");
+             
+ResultSet rs = pst.executeQuery();
 ```
 
