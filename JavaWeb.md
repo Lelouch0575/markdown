@@ -360,12 +360,23 @@ JSP内置对象是JSP容器为每个页面提供的Java对象，开发者可以�
 - 简单查询
 
 ```
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 //第一步：加载驱动器
+//MySQL 8.0 以下版本
+Class.forName("com.mysql.jdbc.Driver");
+//MySQL 8.0 以上版本
 Class.forName("com.mysql.cj.jdbc.Driver");
 
 //第二步：建立连接
-Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo","root","123456");
-         
+//MySQL 8.0 以下版本
+Connection con = DriverManager.getConnection("q	);
+//MySQL 8.0 以上版本
+Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo?useSSL=false&serverTimezone=UTC","root","123456");
+
 //第三步：执行sql语句
 String sql = "select * from member";
 Statement st = con.createStatement();
@@ -390,4 +401,59 @@ pst.setString(1, "jack");
              
 ResultSet rs = pst.executeQuery();
 ```
+
+### 新增、修改、删除
+
+```
+try {
+	//第一步：装载驱动
+	Class.forName("com.mysql.cj.jdbc.Driver");
+	 
+	//第二步：建立连接 
+	Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo","root","123456");
+         
+	//第三步：构建查询对象
+	
+	//新增
+	String sql = "insert into member(username,password,truename,address,telephone,zipcode) values(?,?,?,?,?,?)";
+    
+    //修改
+    //String sql = "update member set password = ? where username = ?";
+    
+    //删除
+    //String sql = "delete from member where username = ?";
+    
+    PreparedStatement pst = con.prepareStatement(sql);
+    
+    pst.setString(1, username);
+    ......
+     
+    int i = pst.executeUpdate();
+     
+    //第五步：关闭连接
+    con.close();
+         
+	}catch(Exception ex) {
+		ex.printStackTrace();
+    }
+}
+```
+
+### 总结
+
+简单查询，使用`Statement`
+
+```
+sta.executeQuery(查询语句);
+sta.executeUpdate(更新语句);
+```
+
+带参数查询，使用`PreparedStatement`
+
+```
+presta.executeQuery();
+presta.executeUpdate();
+```
+
+
 
