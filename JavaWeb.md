@@ -1,5 +1,3 @@
-
-
 # Java Web
 
 ## 1.Getting Started
@@ -344,6 +342,7 @@ JSP内置对象是JSP容器为每个页面提供的Java对象，开发者可以�
 四种属性的操作方法
 
 `void	setAttribute(String name, Object value)`
+
 *Binds an object to this session, using the name specified.*
 
 `Object	getAttribute(String name)`
@@ -351,6 +350,7 @@ JSP内置对象是JSP容器为每个页面提供的Java对象，开发者可以�
 *Returns the object bound with the specified name in this session, or null if no object is bound under the name.*
 
 `void	removeAttribute(String name)`
+
 *Removes the object bound with the specified name from this session.*
 
 ## 5.JDBC数据库访问
@@ -455,5 +455,126 @@ presta.executeQuery();
 presta.executeUpdate();
 ```
 
+### Tomcat数据库连接池
 
+#### Eclipse
 
+添加数据库驱动，放到`WEB-INF/lib`下。
+
+修改`context.xml`文件，当前项目的文件位于`META-INF`下，全局配置找工作区的Servers文件夹。
+
+添加：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+	<Resource 
+    name="jdbc/TestDB"
+	type="javax.sql.DataSource" 
+	auth="Container"
+	driverClassName="com.mysql.jdbc.Driver" 
+	url="jdbc:mysql://localhost:3306/test" 
+	username="root"
+	password="1234" 
+	maxActive="100" 
+	maxIdle="30" 
+	maxWait="1000" />
+</Context>
+```
+
+MySQL8:
+
+```
+driverClassName="com.mysql.cj.jdbc.Driver"
+url="jdbc:mysql://localhost:3306/test?serverTimezone=UTC"
+```
+
+配置web.xml(2.0)
+
+```xml
+<resource-ref>
+	<description>DB Connection</description>
+	<res-ref-name>jdbc/TestDB</res-ref-name> //这里需要和context.xml对应
+	<res-type>javax.sql.DataSource</res-type>
+	<res-auth>Container</res-auth>
+</resource-ref>
+```
+
+访问数据库
+
+```
+import "javax.naming.*"；
+
+InitialContext ctx=new InitialContext();
+ds=(DataSource)ctx.lookup("java:comp/env/jdbc/TestDB"); ////注意这里和context对应name
+Connection conn=ds.getConnection();
+```
+
+#### idea
+
+在项目中创建lib文件夹，通过`File--Project Structure---Modules---Dependencies`添加驱动的jar包。在`web`下创建`META-INF/context.xml`
+
+## 6.模型层Web开发——JavaBean
+
+### JavaBean的要求
+
+- 所有的类必须放在包中，在WEB中没有包的类是不存在的； 
+- 所有的类必须声明为public class，这样才能够被外部所访问； 
+- 类中所有的属性都必须封装，即：使用private声明；
+- 封装的属性如果需要被外部所操作，则必须编写对应的 setter、getter方法；
+- 一个 JavaBean中至少存在一个无参构造方法，此为JSP中的标签所使用。
+
+### Web开发的标准目录结构
+
+![](img/2020-03-06 153442.png)
+
+### 使用JavaBean
+
+#### 使用JSP的page指令导入JavaBean
+
+```
+<%@ page import="com.org.SimpleBean"%>
+```
+
+#### 使用`<jsp:useBean>`动作元素导入JavaBean
+
+```
+<jsp:useBean id="simple" scope="page" class="com.org.SimpleBean"/>
+```
+
+id指定Bean的对象名，scope指定对象的保存范围(page、request、session、application)，class指定Bean的完整类名。
+
+#### 属性操作
+
+1. `jsp:setProperty`用来设置已经实例化的Bean对象的属性：
+
+```
+<jsp:setProperty name=对象名 property=属性名 param=参数名/>
+```
+
+当参数名和属性名相同时，param可省略。
+
+2. 设置具体的值：
+
+```
+<jsp:setProperty name=对象名 property=属性名 values=值/>
+```
+
+3. 若参数名和Bean的属性名一一对应：
+
+```
+<jsp:setProperty name=对象名 property="*"/>
+```
+
+4. `jsp:getProperty`动作提取指定Bean属性的值，转换成字符串，然后输出：
+
+```
+<jsp:getProperty name=对象名 property=属性名/>
+```
+
+### JavaBean的保存范围
+
+1. page范围的JavaBean只在本页有效，跳转后无效。
+2. request范围设置的JavaBean，则在一次服务器跳转中，将不会重复声明JavaBean对象。
+3. 当一个用户连接到JSP页面后，此session范围的JavaBean将会一直保留，直到会话结束。
+4. application范围的JavaBean是所有用户所共享的，只要声明后就会在服务器端保存，所有用户都可以直接访问此对象。
