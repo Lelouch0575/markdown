@@ -631,3 +631,135 @@ MVC 模式代表 Model-View-Controller（模型-视图-控制器） 模式。这
 处理流程：
 
 ![](img/2020-03-07_154842.jpg)
+
+## 8.EL和JSTL
+
+### EL表达式
+
+JSP表达式语言（EL）使得访问存储在JavaBean中的数据变得非常简单。可以方便地访问标志位（page、request、session、application）中的属性内容。JSP EL既可以用来创建算术表达式也可以用来创建逻辑表达式。在JSP EL表达式内可以使用整型数，浮点数，字符串，常量true、false，还有null。
+
+`${属性名称}`
+
+等价于
+
+`<%= 表达式%>`
+
+#### 内置对象
+
+| 内置对象         | **描述**                      |
+| :---------------- |: ----------------------------- |
+| pageScope        | page 作用域                   |
+| requestScope     | request 作用域                |
+| sessionScope     | session 作用域                |
+| applicationScope | application 作用域            |
+| param            | Request 对象的参数，字符串    |
+| paramValues      | Request对象的参数，字符串集合 |
+| header           | HTTP 信息头，字符串           |
+| headerValues     | HTTP 信息头，字符串集合       |
+| initParam        | 上下文初始化参数              |
+| cookie           | Cookie值                      |
+| pageContext      | 当前页面的pageContext         |
+
+指定范围：
+
+```
+${pageScope.info}
+${requestScope.info}
+${sessionScope.info}
+${applicationScope.info}
+```
+
+#### 操作符
+
+| **操作符** | **描述**                         |
+| :---------- |: -------------------------------- |
+| .          | 访问一个Bean属性或者一个映射条目 |
+| []         | 访问一个数组或者链表的元素       |
+| ( )        | 组织一个子表达式以改变优先级     |
+| +          | 加                               |
+| -          | 减或负                           |
+| *          | 乘                               |
+| / or div   | 除                               |
+| % or mod   | 取模                             |
+| == or eq   | 测试是否相等                     |
+| != or ne   | 测试是否不等                     |
+| < or lt    | 测试是否小于                     |
+| > or gt    | 测试是否大于                     |
+| <= or le   | 测试是否小于等于                 |
+| >= or ge   | 测试是否大于等于                 |
+| && or and  | 测试逻辑与                       |
+| \|\| or or | 测试逻辑或                       |
+| ! or not   | 测试取反                         |
+| empty      | 测试是否空值                     |
+
+### JSP自定义标签
+
+1. 定义标签的操作类
+
+   ```java
+   package com.org;
+   import javax.servlet.jsp.JspException;
+   import javax.servlet.jsp.JspWriter;
+   import javax.servlet.jsp.tagext.TagSupport;
+   public class HelloTag extends TagSupport {
+       @Override
+       public int doStartTag() throws JspException {
+           JspWriter out = super.pageContext.getOut();         // 取得页面输出流对象
+           try {
+               out.println("<h1>Hello World!!!</h1>");   // 进行页面输出
+           } catch (Exception e) {             // 此处产生异常，需要处理
+               e.printStackTrace();
+           }
+           return TagSupport.SKIP_BODY;           // 没有标签体
+       }
+   }
+   ```
+
+   
+
+2.  /WEB-INF/hellotag.tld——定义标签描述符文件
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <taglib xmlns="https://java.sun.com/xml/ns/j2ee"
+       xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="https://java.sun.com/xml/ns/j2ee https://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_1.xsd"
+       version="2.1">
+       <tlib-version>1.0</tlib-version>        <!-- 表示标签库的版本 -->
+       <short-name>firsttag</short-name>       <!-- 为标签库在TLD中的描述名称 -->
+       <tag>
+           <name>hello</name>      <!-- 表示标签在JSP中的使用名称 -->
+           <tag-class>
+               com.org.HelloTag
+           </tag-class>      <!--  表示这个标签所指向的class文件 -->
+           <body-content>empty</body-content>  <!-- 表示标签体内容为空 -->
+       </tag>
+   </taglib>
+   ```
+
+3. 编写JSP页面并调用自定义标签
+
+   ```jsp
+   <%@ page contentType="text/html;charset=GBK"%>
+   <%@ taglib prefix="mytag" uri="/WEB-INF/hellotag.tld"%>
+   <html>
+       <head>
+           <title> 自定义客户标签</title>
+       </head>
+       <body>
+           <h1><mytag:hello/></h1>       <!-- 访问标签 -->
+       </body>
+   </html>
+   ```
+
+4. 修改web.xml——映射TLD文件
+
+   ```xml
+   <jsp-config>
+       <taglib>
+         <taglib-uri>gdqy_hello</taglib-uri>
+         <taglib-location>/WEB-INF/hellotag.tld</taglib-location>
+       </taglib>
+   </jsp-config>
+   ```
+
