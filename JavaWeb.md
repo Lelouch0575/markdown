@@ -4,6 +4,14 @@
 
 ## 2.开发环境
 
+### Eclipse
+
+Window---Preferences---Server---Runtime Environment，添加Tomcat。
+
+### Idea
+
+Run---Edit Configuration---configure
+
 ## 3.控制层Web开发
 
 ### Servlet继承体系
