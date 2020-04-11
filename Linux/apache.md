@@ -278,30 +278,30 @@ Require all granted
 # vim /etc/httpd/conf/httpd.conf
 
 ………………省略部分输出信息………………
-113 <VirtualHost 192.168.10.10>
-114 DocumentRoot "/home/wwwroot/www"
-115 ServerName "www.linuxprobe.com"
-116 <Directory "/home/wwwroot/www">
-117 AllowOverride None
-118 Require all granted
-119 </directory> 
-120 </VirtualHost>
-121 <VirtualHost 192.168.10.10>
-122 DocumentRoot "/home/wwwroot/bbs"
-123 ServerName "bbs.linuxprobe.com"
-124 <Directory "/home/wwwroot/bbs">
-125 AllowOverride None
-126 Require all granted
-127 </Directory>
-128 </VirtualHost>
-129 <VirtualHost 192.168.10.10>
-130 DocumentRoot "/home/wwwroot/tech"
-131 ServerName "tech.linuxprobe.com"
-132 <Directory "/home/wwwroot/tech">
-133 AllowOverride None
-134 Require all granted
-135 </directory>
-136 </VirtualHost>
+<VirtualHost 192.168.10.10>
+DocumentRoot "/home/wwwroot/www"
+ServerName "www.linuxprobe.com"
+<Directory "/home/wwwroot/www">
+AllowOverride None
+Require all granted
+</directory> 
+</VirtualHost>
+<VirtualHost 192.168.10.10>
+DocumentRoot "/home/wwwroot/bbs"
+ServerName "bbs.linuxprobe.com"
+<Directory "/home/wwwroot/bbs">
+AllowOverride None
+Require all granted
+</Directory>
+</VirtualHost>
+<VirtualHost 192.168.10.10>
+DocumentRoot "/home/wwwroot/tech"
+ServerName "tech.linuxprobe.com"
+<Directory "/home/wwwroot/tech">
+AllowOverride None
+Require all granted
+</directory>
+</VirtualHost>
 ………………省略部分输出信息………………
 ```
 
@@ -356,22 +356,22 @@ Require all granted
 # vim /etc/httpd/conf/httpd.conf
 
 ………………省略部分输出信息……………… 
-113 <VirtualHost 192.168.10.10:6111>
-114 DocumentRoot "/home/wwwroot/6111"
-115 ServerName www.linuxprobe.com
-116 <Directory "/home/wwwroot/6111">
-117 AllowOverride None
-118 Require all granted
-119 </Directory> 
-120 </VirtualHost>
-121 <VirtualHost 192.168.10.10:6222>
-122 DocumentRoot "/home/wwwroot/6222"
-123 ServerName bbs.linuxprobe.com
-124 <Directory "/home/wwwroot/6222">
-125 AllowOverride None
-126 Require all granted
-127 </Directory>
-128 </VirtualHost>
+<VirtualHost 192.168.10.10:6111>
+DocumentRoot "/home/wwwroot/6111"
+ServerName www.linuxprobe.com
+<Directory "/home/wwwroot/6111">
+AllowOverride None
+Require all granted
+</Directory> 
+</VirtualHost>
+<VirtualHost 192.168.10.10:6222>
+DocumentRoot "/home/wwwroot/6222"
+ServerName bbs.linuxprobe.com
+<Directory "/home/wwwroot/6222">
+AllowOverride None
+Require all granted
+</Directory>
+</VirtualHost>
 ………………省略部分输出信息………………
 ```
 

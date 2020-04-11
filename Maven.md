@@ -52,3 +52,12 @@ ex : `export PATH=/opt/apache-maven-3.5.2/bin:$PATH`
 ------resources 测试配置文件
 ```
 
+## IDE集成maven
+
+### IDEA
+
+File--settings--Build--Build Tools--Maven，选择Maven路径和配置文件路径和仓库路径。
+
+#### 创建Web项目
+
+创建maven项目，勾选create from archetype，选择maven-archetype-webapp，补全缺失的文件夹，在文件夹上右键--Mark Directory as进行标记。（也可在File--Project Structure--modules下设置）
