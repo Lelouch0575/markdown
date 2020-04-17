@@ -294,6 +294,104 @@ ApplicationContext context = new ClassPathXmlApplicationContext("services.xml", 
 </dependency>
 ```
 
+### 配置web.xml， 注册DispatcherServlet
+
+```xml
+<web-app>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/app-context.xml</param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>app</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value></param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>app</servlet-name>
+        <url-pattern>/app/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+```
+
+### 配置springmvc-servlet.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <!--处理映射器-->
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+    
+    <!--处理适配器-->
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+    
+    <!--视图解析器:DispatcherServlet给他的ModelAndView-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" id="InternalResourceViewResolver">
+        <!--前缀-->
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <!--后缀-->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+</beans>
+```
+
+#### 使用注解的springmvc-servlet.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:context="http://www.springframework.org/schema/context"
+      xmlns:mvc="http://www.springframework.org/schema/mvc"
+      xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+   <!-- 自动扫描包，让指定包下的注解生效,由IOC容器统一管理 -->
+   <context:component-scan base-package="com.kuang.controller"/>
+   <!-- 让Spring MVC不处理静态资源 -->
+   <mvc:default-servlet-handler />
+   <!--
+   支持mvc注解驱动
+       在spring中一般采用@RequestMapping注解来完成映射关系
+       要想使@RequestMapping注解生效
+       必须向上下文中注册DefaultAnnotationHandlerMapping
+       和一个AnnotationMethodHandlerAdapter实例
+       这两个实例分别在类级别和方法级别处理。
+       而annotation-driven配置帮助我们自动完成上述两个实例的注入。
+    -->
+   <mvc:annotation-driven />
+
+   <!-- 视图解析器 -->
+   <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+         id="internalResourceViewResolver">
+       <!-- 前缀 -->
+       <property name="prefix" value="/WEB-INF/jsp/" />
+       <!-- 后缀 -->
+       <property name="suffix" value=".jsp" />
+   </bean>
+
+</beans>
+```
+
 
 
 ## 四、Spring Boot
