@@ -61,3 +61,24 @@ File--settings--Build--Build Tools--Maven，选择Maven路径和配置文件路�
 #### 创建Web项目
 
 创建maven项目，勾选create from archetype，选择maven-archetype-webapp，补全缺失的文件夹，在文件夹上右键--Mark Directory as进行标记。（也可在File--Project Structure--modules下设置）
+
+***
+
+# Gradle
+
+## 环境变量
+
+`GRADLE_HOME  %GRADLE_HOME%\bin`
+
+## 使用Maven仓库
+
+创建环境变量`GRADLE_USER_HOME`指定仓库路径，修改`build.gradle`
+
+```
+repositories {
+	//先让gradle从本地仓库找,找不到再从下面的mavenCentral()中央仓库去找jar包
+    mavenLocal()
+    mavenCentral()
+}
+```
+
