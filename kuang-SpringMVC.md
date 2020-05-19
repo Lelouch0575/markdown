@@ -754,15 +754,15 @@ Restful就是一个资源定位及资源操作的风格。不是标准也不是�
 
 1. 在新建一个类 RestFulController
 
-   ```java
+```java
    @Controller
    public class RestFulController {
    }
-   ```
+```
 
 2. 在Spring MVC中可以使用  @PathVariable 注解，让方法参数的值对应绑定到一个URI模板变量上。
 
-   ```java
+```java
    @Controller
    public class RestFulController {
    
@@ -777,7 +777,7 @@ Restful就是一个资源定位及资源操作的风格。不是标准也不是�
           return "test";
      }
    }
-   ```
+```
 
 3. 我们来测试请求查看下
 
@@ -789,7 +789,7 @@ Restful就是一个资源定位及资源操作的风格。不是标准也不是�
 
 5. 我们来修改下对应的参数类型，再次测试
 
-   ```java
+```java
    //映射访问路径
 @RequestMapping("/commit/{p1}/{p2}")
 public String index(@PathVariable int p1, @PathVariable String p2, Model model){
@@ -800,8 +800,8 @@ public String index(@PathVariable int p1, @PathVariable String p2, Model model){
    //返回视图位置
    return "test";
 }
-   ```
-   
+```
+
 
 **使用method属性指定请求类型**
 
@@ -811,27 +811,27 @@ public String index(@PathVariable int p1, @PathVariable String p2, Model model){
 
 - 增加一个方法
 
-  ```java
+```java
   //映射访问路径,必须是POST请求
   @RequestMapping(value = "/hello",method = {RequestMethod.POST})
   public String index2(Model model){
      model.addAttribute("msg", "hello!");
      return "test";
   }
-  ```
+```
 
 - 我们使用浏览器地址栏进行访问默认是Get请求，会报错405：
 
 - 如果将POST修改为GET则正常了；
 
-  ```java
+```java
   //映射访问路径,必须是Get请求
   @RequestMapping(value = "/hello",method = {RequestMethod.GET})
   public String index2(Model model){
      model.addAttribute("msg", "hello!");
      return "test";
   }
-  ```
+```
 
 ### 小结
 
