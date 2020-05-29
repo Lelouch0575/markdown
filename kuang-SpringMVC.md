@@ -1849,6 +1849,261 @@ Spring层搞定！再次理解一下，Spring就是一个大杂烩，一个容�
 
 配置文件，暂时结束！Controller 和 视图层编写
 
+1、BookController 类编写 ， 方法一：查询全部书籍
+
+```java
+@Controller
+@RequestMapping("/book")
+public class BookController {
+
+   @Autowired
+   @Qualifier("BookServiceImpl")
+   private BookService bookService;
+
+   @RequestMapping("/allBook")
+   public String list(Model model) {
+       List<Books> list = bookService.queryAllBook();
+       model.addAttribute("list", list);
+       return "allBook";
+  }
+}
+```
+
+2、编写首页 **index.jsp**
+
+```jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"pageEncoding="UTF-8" %>
+<!DOCTYPE HTML>
+<html>
+<head>
+   <title>首页</title>
+   <style type="text/css">
+       a {
+           text-decoration: none;
+           color: black;
+           font-size: 18px;
+      }
+       h3 {
+           width: 180px;
+           height: 38px;
+           margin: 100px auto;
+           text-align: center;
+           line-height: 38px;
+           background: deepskyblue;
+           border-radius: 4px;
+      }
+   </style>
+</head>
+<body>
+
+<h3>
+   <a href="${pageContext.request.contextPath}/book/allBook">点击进入列表页</a>
+</h3>
+</body>
+</html>
+```
+
+3、书籍列表页面 **allbook.jsp**
+
+```jsp
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+   <title>书籍列表</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!-- 引入 Bootstrap -->
+   <linkhref="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+   <div class="row clearfix">
+       <div class="col-md-12 column">
+           <div class="page-header">
+               <h1>
+                   <small>书籍列表 —— 显示所有书籍</small>
+               </h1>
+           </div>
+       </div>
+   </div>
+
+   <div class="row">
+       <div class="col-md-4 column">
+           <a class="btn btn-primary"href="${pageContext.request.contextPath}/book/toAddBook">新增</a>
+       </div>
+   </div>
+
+   <div class="row clearfix">
+       <div class="col-md-12 column">
+           <table class="table table-hover table-striped">
+               <thead>
+               <tr>
+                   <th>书籍编号</th>
+                   <th>书籍名字</th>
+                   <th>书籍数量</th>
+                   <th>书籍详情</th>
+                   <th>操作</th>
+               </tr>
+               </thead>
+
+               <tbody>
+               <c:forEach var="book" items="${requestScope.get('list')}">
+                   <tr>
+                       <td>${book.getBookID()}</td>
+                       <td>${book.getBookName()}</td>
+                       <td>${book.getBookCounts()}</td>
+                       <td>${book.getDetail()}</td>
+                       <td>
+                           <ahref="${pageContext.request.contextPath}/book/toUpdateBook?id=${book.getBookID()}">更改</a> |
+                           <ahref="${pageContext.request.contextPath}/book/del/${book.getBookID()}">删除</a>
+                       </td>
+                   </tr>
+               </c:forEach>
+               </tbody>
+           </table>
+       </div>
+   </div>
+</div>
+```
+
+4、BookController 类编写 ， 方法二：添加书籍
+
+```java
+@RequestMapping("/toAddBook")
+public String toAddPaper() {
+   return "addBook";
+}
+
+@RequestMapping("/addBook")
+public String addPaper(Books books) {
+   System.out.println(books);
+   bookService.addBook(books);
+   return "redirect:/book/allBook";
+}
+```
+
+5、添加书籍页面：**addBook.jsp**
+
+```jsp
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<html>
+<head>
+   <title>新增书籍</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!-- 引入 Bootstrap -->
+   <linkhref="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"rel="stylesheet">
+</head>
+<body>
+<div class="container">
+
+   <div class="row clearfix">
+       <div class="col-md-12 column">
+           <div class="page-header">
+               <h1>
+                   <small>新增书籍</small>
+               </h1>
+           </div>
+       </div>
+   </div>
+   <form action="${pageContext.request.contextPath}/book/addBook"method="post">
+      书籍名称：<input type="text" name="bookName"><br><br><br>
+      书籍数量：<input type="text" name="bookCounts"><br><br><br>
+      书籍详情：<input type="text" name="detail"><br><br><br>
+       <input type="submit" value="添加">
+   </form>
+
+</div>
+```
+
+6、BookController 类编写 ， 方法三：修改书籍
+
+```java
+@RequestMapping("/toUpdateBook")
+public String toUpdateBook(Model model, int id) {
+   Books books = bookService.queryBookById(id);
+   System.out.println(books);
+   model.addAttribute("book",books );
+   return "updateBook";
+}
+
+@RequestMapping("/updateBook")
+public String updateBook(Model model, Books book) {
+   System.out.println(book);
+   bookService.updateBook(book);
+   Books books = bookService.queryBookById(book.getBookID());
+   model.addAttribute("books", books);
+   return "redirect:/book/allBook";
+}
+```
+
+7、修改书籍页面  **updateBook.jsp**
+
+```jsp
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+   <title>修改信息</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!-- 引入 Bootstrap -->
+   <linkhref="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"rel="stylesheet">
+</head>
+<body>
+<div class="container">
+
+   <div class="row clearfix">
+       <div class="col-md-12 column">
+           <div class="page-header">
+               <h1>
+                   <small>修改信息</small>
+               </h1>
+           </div>
+       </div>
+   </div>
+
+   <form action="${pageContext.request.contextPath}/book/updateBook"method="post">
+       <input type="hidden" name="bookID"value="${book.getBookID()}"/>
+      书籍名称：<input type="text" name="bookName"value="${book.getBookName()}"/>
+      书籍数量：<input type="text" name="bookCounts"value="${book.getBookCounts()}"/>
+      书籍详情：<input type="text" name="detail"value="${book.getDetail() }"/>
+       <input type="submit" value="提交"/>
+   </form>
+
+</div>
+```
+
+8、BookController 类编写 ， 方法四：删除书籍
+
+```java
+@RequestMapping("/del/{bookId}")
+public String deleteBook(@PathVariable("bookId") int id) {
+   bookService.deleteBookById(id);
+   return "redirect:/book/allBook";
+}
+```
+
+**配置Tomcat，进行运行！**
+
+到目前为止，这个SSM项目整合已经完全的OK了，可以直接运行进行测试！这个练习十分的重要，大家需要保证，不看任何东西，自己也可以完整的实现出来！
+
+> 小结及展望
+
+这个是同学们的第一个SSM整合案例，一定要烂熟于心！
+
+SSM框架的重要程度是不言而喻的，学到这里，大家已经可以进行基本网站的单独开发。但是这只是增删改查的基本操作。可以说学到这里，大家才算是真正的步入了后台开发的门。也就是能找一个后台相关工作的底线。
+
+或许很多人，工作就做这些事情，但是对于个人的提高来说，还远远不够！
+
+我们后面还要学习一些 SpringMVC 的知识！
+
+- Ajax  和  Json
+- 文件上传和下载
+- 拦截器
+
 ## 06：Json交互处理
 
 > 什么是JSON？
